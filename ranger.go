@@ -75,15 +75,15 @@ func ParseHeader(h http.Header, contentLength int) ([]Range, error) {
 }
 
 // Parse parses an RFC2616 HTTP range. It accepts a slice of strings, each
-// beginning with prefix and delimited with ','. maxLen is the size of the
+// beginning with prefix and delimited with ','. contentLen is the size of the
 // content being ranged over.
 //
 // Parse merges overlapping ranges together. The returned []Range will be
 // sorted such that a.Start =< b.Start.
 //
-// If maxLen is < 0, then Error is returned. If any of the the ranges fall
-// outside of 0 or maxLen, Error is returned.
-func Parse(ranges []string, prefix string, maxLen int) ([]Range, error) {
+// If contentLen is < 0, then Error is returned. If any of the the ranges fall
+// outside of 0 or contentLen, Error is returned.
+func Parse(ranges []string, prefix string, contentLen int) ([]Range, error) {
 	result := make([]Range, 0, len(ranges))
 	for _, r := range ranges {
 		r = strings.TrimPrefix(r, prefix)
@@ -98,19 +98,19 @@ func Parse(ranges []string, prefix string, maxLen int) ([]Range, error) {
 				if err != nil {
 					return nil, err
 				}
-				if y < 0 || y > maxLen {
+				if y < 0 || y > contentLen {
 					return nil, Error
 				}
-				result = append(result, Range{Start: maxLen - y, Stop: maxLen})
+				result = append(result, Range{Start: contentLen - y, Stop: contentLen - 1})
 			} else if parts[1] == "" {
 				x, err := strconv.Atoi(parts[0])
 				if err != nil {
 					return nil, err
 				}
-				if x < 0 || x > maxLen {
+				if x < 0 || x >= contentLen {
 					return nil, Error
 				}
-				result = append(result, Range{Start: x, Stop: maxLen})
+				result = append(result, Range{Start: x, Stop: contentLen - 1})
 			} else {
 				x, err := strconv.Atoi(parts[0])
 				if err != nil {
@@ -120,7 +120,7 @@ func Parse(ranges []string, prefix string, maxLen int) ([]Range, error) {
 				if err != nil {
 					return nil, err
 				}
-				if x < 0 || y < 0 || x > maxLen || y > maxLen || x > y {
+				if x < 0 || y < 0 || x >= contentLen || y >= contentLen || x > y {
 					return nil, Error
 				}
 				result = append(result, Range{Start: x, Stop: y})

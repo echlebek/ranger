@@ -10,7 +10,7 @@ import (
 type parseTest struct {
 	Ranges         []string
 	Prefix         string
-	MaxVal         int
+	ContentLength  int
 	ExpectedRanges []Range
 	ExpectedError  string
 }
@@ -23,11 +23,11 @@ func TestParse(t *testing.T) {
 				"bytes=50-99,200-300",
 				"bytes=250-,-50",
 			},
-			Prefix: "bytes=",
-			MaxVal: 350,
+			Prefix:        "bytes=",
+			ContentLength: 350,
 			ExpectedRanges: []Range{
 				{Start: 0, Stop: 99},
-				{Start: 200, Stop: 350},
+				{Start: 200, Stop: 349},
 			},
 			ExpectedError: "<nil>",
 		},
@@ -39,7 +39,7 @@ func TestParse(t *testing.T) {
 				"bytes=250-",
 			},
 			Prefix:         "bytes=",
-			MaxVal:         200,
+			ContentLength:  200,
 			ExpectedRanges: nil,
 			ExpectedError:  "invalid range",
 		},
@@ -48,7 +48,7 @@ func TestParse(t *testing.T) {
 				"foo=0-100",
 			},
 			Prefix:         "bytes=",
-			MaxVal:         200,
+			ContentLength:  200,
 			ExpectedRanges: nil,
 			ExpectedError:  `strconv.ParseInt: parsing "foo=0": invalid syntax`,
 		},
@@ -59,7 +59,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		ranges, err := Parse(test.Ranges, test.Prefix, test.MaxVal)
+		ranges, err := Parse(test.Ranges, test.Prefix, test.ContentLength)
 		if got, want := fmt.Sprintf("%v", err), test.ExpectedError; got != want {
 			t.Errorf("test %d: bad error: got %q, want %q", i, got, want)
 		}
