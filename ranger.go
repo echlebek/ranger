@@ -67,7 +67,7 @@ func (b rangeSlice) Less(i, j int) bool {
 }
 
 // ParseHeader parses an http.Header. It assumes that the range starts with
-// 'bytes='. For other types of ranges, use ParseRange.
+// 'bytes='. For other types of ranges, use Parse.
 //
 // The header must contain a valid Range field and a valid Content-Length field.
 // Otherwise, Error will be returned.
