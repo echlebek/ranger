@@ -71,6 +71,7 @@ func TestParse(t *testing.T) {
 
 type headerTest struct {
 	Header         http.Header
+	Length         int
 	ExpectedRanges []Range
 	ExpectedError  string
 }
@@ -79,9 +80,9 @@ func TestParseHeader(t *testing.T) {
 	tests := []headerTest{
 		{ // Happy path
 			Header: http.Header{
-				"Range":          {"100-200"},
-				"Content-Length": {"300"},
+				"Range": {"100-200"},
 			},
+			Length: 300,
 			ExpectedRanges: []Range{
 				{Start: 100, Stop: 200},
 			},
@@ -89,7 +90,7 @@ func TestParseHeader(t *testing.T) {
 		},
 	}
 	for i, test := range tests {
-		ranges, err := ParseHeader(test.Header)
+		ranges, err := ParseHeader(test.Header, test.Length)
 		if got, want := fmt.Sprintf("%v", err), test.ExpectedError; got != want {
 			t.Errorf("test %d: bad error: got %q, want %q", i, got, want)
 		}

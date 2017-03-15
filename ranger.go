@@ -22,7 +22,6 @@ package ranger
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -69,14 +68,10 @@ func (b rangeSlice) Less(i, j int) bool {
 // ParseHeader parses an http.Header. It assumes that the range starts with
 // 'bytes='. For other types of ranges, use Parse.
 //
-// The header must contain a valid Range field and a valid Content-Length field.
-// Otherwise, Error will be returned.
-func ParseHeader(h http.Header) ([]Range, error) {
-	length, err := strconv.Atoi(h.Get("Content-Length"))
-	if err != nil {
-		return nil, fmt.Errorf("invalid content length: %q", h["Content-Length"])
-	}
-	return Parse(h["Range"], "bytes=", length)
+// The header must contain a valid Range field. Otherwise, Error will be
+// returned.
+func ParseHeader(h http.Header, contentLength int) ([]Range, error) {
+	return Parse(h["Range"], "bytes=", contentLength)
 }
 
 // Parse parses an RFC2616 HTTP range. It accepts a slice of strings, each
