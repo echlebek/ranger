@@ -50,7 +50,7 @@ func TestParse(t *testing.T) {
 			Prefix:         "bytes=",
 			ContentLength:  200,
 			ExpectedRanges: nil,
-			ExpectedError:  `strconv.ParseInt: parsing "foo=0": invalid syntax`,
+			ExpectedError:  `strconv.Atoi: parsing "foo=0": invalid syntax`,
 		},
 		{ // Empty
 			ExpectedError:  "<nil>",
